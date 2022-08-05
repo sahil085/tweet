@@ -95,7 +95,7 @@ public class TweetController {
         }
     }
 
-    @GetMapping("/tweets/links")
+    @GetMapping("/tweet/links")
     public APIResponse<Map<BigInteger, List<String>>> getAllTweetLinks() {
 
         Map<BigInteger, List<String>> tweetMap = tweetService.getAllLinks();

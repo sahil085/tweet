@@ -6,6 +6,7 @@ import com.example.demo.model.TweetResponse;
 import com.example.demo.model.UserResponse;
 import com.example.demo.service.TweetService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -13,35 +14,105 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/tweet")
+@RequestMapping("/api/v1")
 public class TweetController {
 
     @Autowired
     TweetService tweetService;
 
 
-    @GetMapping("")
+    @GetMapping("/tweets")
     public APIResponse<List<TweetResponse>> getAllTweet() {
-        return tweetService.getAllTweetData();
+        List<TweetResponse> tweetResponseList = tweetService.getAllTweetData();
+        if (tweetResponseList.isEmpty()) {
+            return APIResponse.<List<TweetResponse>>builder()
+                    .message("No content found")
+                    .httpCode(HttpStatus.NO_CONTENT.value())
+                    .body(tweetResponseList)
+                    .build();
+        } else {
+            return APIResponse.<List<TweetResponse>>builder()
+                    .message("Success")
+                    .httpCode(HttpStatus.OK.value())
+                    .body(tweetResponseList)
+                    .build();
+        }
+
     }
 
-    @GetMapping("/findAll/user")
+    @GetMapping("/tweets/users")
     public APIResponse<List<UserResponse>> getAllTweetUser() {
-        return tweetService.getAllTweetUsers();
+
+        List<UserResponse> userResponseList = tweetService.getAllTweetUsers();
+
+        if (userResponseList.isEmpty()) {
+           return APIResponse.<List<UserResponse>>builder()
+                    .message("No content found")
+                    .httpCode(HttpStatus.NO_CONTENT.value())
+                    .body(userResponseList)
+                    .build();
+        } else {
+            return APIResponse.<List<UserResponse>>builder()
+                    .message("Success")
+                    .httpCode(HttpStatus.OK.value())
+                    .body(userResponseList)
+                    .build();
+        }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/tweet/{id}")
     public APIResponse<TweetResponse> getTweetById(@PathVariable("id") BigInteger id) {
-        return tweetService.getTweetById(id);
+        TweetResponse tweetResponse = tweetService.getTweetById(id);
+
+        if (tweetResponse != null) {
+            return APIResponse.<TweetResponse>builder()
+                    .message("Success")
+                    .httpCode(HttpStatus.OK.value())
+                    .body(tweetResponse)
+                    .build();
+        } else {
+            return APIResponse.<TweetResponse>builder()
+                    .message("Tweet not found for given id")
+                    .httpCode(HttpStatus.NOT_FOUND.value())
+                    .build();
+        }
     }
 
-    @GetMapping("/user")
+    @GetMapping("/tweet/user")
     public APIResponse<UserResponse> getTweetUserByScreenName(@RequestParam("screenName") String screenName) {
-        return tweetService.getTweetUserByScreenName(screenName);
+        UserResponse userResponse = tweetService.getTweetUserByScreenName(screenName);
+        if (userResponse != null) {
+            return APIResponse.<UserResponse>builder()
+                    .message("Success")
+                    .httpCode(HttpStatus.OK.value())
+                    .body(userResponse)
+                    .build();
+        } else {
+            return APIResponse.<UserResponse>builder()
+                    .message("Tweet user not found for given screen name")
+                    .httpCode(HttpStatus.NOT_FOUND.value())
+                    .build();
+        }
     }
 
-    @GetMapping("/links")
+    @GetMapping("/tweets/links")
     public APIResponse<Map<BigInteger, List<String>>> getAllTweetLinks() {
-        return tweetService.getAllLinks();
+
+        Map<BigInteger, List<String>> tweetMap = tweetService.getAllLinks();
+
+        if (tweetMap.isEmpty()) {
+            return APIResponse.<Map<BigInteger, List<String>>>builder()
+                    .message("No content found")
+                    .httpCode(HttpStatus.NO_CONTENT.value())
+                    .body(tweetMap)
+                    .build();
+        } else {
+            return APIResponse.<Map<BigInteger, List<String>>>builder()
+                    .message("Success")
+                    .httpCode(HttpStatus.OK.value())
+                    .body(tweetMap)
+                    .build();
+        }
+
     }
 }

@@ -1,13 +1,11 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.APIResponse;
 import com.example.demo.model.Root;
 import com.example.demo.model.TweetResponse;
 import com.example.demo.model.UserResponse;
 import com.example.demo.service.TweetService;
 import com.example.demo.util.TweetData;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -41,27 +39,18 @@ public class TweetServiceImpl implements TweetService {
     }
 
     @Override
-    public APIResponse<List<TweetResponse>> getAllTweetData() {
-
-        return APIResponse.<List<TweetResponse>>builder()
-                .message("Success")
-                .httpCode(HttpStatus.OK.value())
-                .body(mapDataToTweetResponse(tweetData.getTweetData()))
-                .build();
+    public List<TweetResponse> getAllTweetData() {
+        return mapDataToTweetResponse(tweetData.getTweetData());
     }
 
     @Override
-    public APIResponse<List<UserResponse>> getAllTweetUsers() {
+    public List<UserResponse> getAllTweetUsers() {
 
-        return APIResponse.<List<UserResponse>>builder()
-                .message("Success")
-                .httpCode(HttpStatus.OK.value())
-                .body(mapDataToUserResponse(tweetData.getTweetData()))
-                .build();
+        return mapDataToUserResponse(tweetData.getTweetData());
     }
 
     @Override
-    public APIResponse<Map<BigInteger, List<String>>> getAllLinks() {
+    public Map<BigInteger, List<String>> getAllLinks() {
 
         List<Root> rootList = tweetData.getTweetData();
         Map<BigInteger, List<String>> tweetMap = new HashMap<>();
@@ -78,49 +67,23 @@ public class TweetServiceImpl implements TweetService {
             tweetMap.put(tweet.getId(), containedUrls);
         });
 
-        return APIResponse.<Map<BigInteger, List<String>>>builder()
-                .message("Success")
-                .httpCode(HttpStatus.OK.value())
-                .body(tweetMap)
-                .build();
+        return tweetMap;
     }
 
     @Override
-    public APIResponse<TweetResponse> getTweetById(BigInteger id) {
+    public TweetResponse getTweetById(BigInteger id) {
         Optional<Root> optionalRoot = tweetData.getTweetData().stream()
                 .filter(tweet -> tweet.getId().equals(id))
                 .findFirst();
-        if (optionalRoot.isPresent()) {
-            return APIResponse.<TweetResponse>builder()
-                    .message("Success")
-                    .httpCode(HttpStatus.OK.value())
-                    .body(getTweetResponse(optionalRoot.get()))
-                    .build();
-        } else {
-            return APIResponse.<TweetResponse>builder()
-                    .message("Tweet not found for given id")
-                    .httpCode(HttpStatus.NOT_FOUND.value())
-                    .build();
-        }
+        return optionalRoot.map(this::getTweetResponse).orElse(null);
     }
 
     @Override
-    public APIResponse<UserResponse> getTweetUserByScreenName(String screenName) {
+    public UserResponse getTweetUserByScreenName(String screenName) {
         Optional<Root> optionalRoot = tweetData.getTweetData().stream()
                 .filter(tweet -> Objects.equals(tweet.getUser().getScreen_name(), screenName))
                 .findFirst();
-        if (optionalRoot.isPresent()) {
-            return APIResponse.<UserResponse>builder()
-                    .message("Success")
-                    .httpCode(HttpStatus.OK.value())
-                    .body(getUserResponse(optionalRoot.get()))
-                    .build();
-        } else {
-            return APIResponse.<UserResponse>builder()
-                    .message("Tweet user not found for given screen name")
-                    .httpCode(HttpStatus.NOT_FOUND.value())
-                    .build();
-        }
+        return optionalRoot.map(this::getUserResponse).orElse(null);
     }
 
     private List<TweetResponse> mapDataToTweetResponse(List<Root> tweetList) {

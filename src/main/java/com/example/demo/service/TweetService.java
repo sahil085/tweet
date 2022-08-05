@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.model.APIResponse;
 import com.example.demo.model.TweetResponse;
 import com.example.demo.model.UserResponse;
 
@@ -10,14 +9,14 @@ import java.util.Map;
 
 public interface TweetService {
 
-    APIResponse<List<TweetResponse>> getAllTweetData();
+    List<TweetResponse> getAllTweetData();
 
-    APIResponse<List<UserResponse>> getAllTweetUsers();
+    List<UserResponse> getAllTweetUsers();
 
-    APIResponse<Map<BigInteger, List<String>>> getAllLinks();
+    Map<BigInteger, List<String>> getAllLinks();
 
-    APIResponse<TweetResponse> getTweetById(BigInteger id);
+    TweetResponse getTweetById(BigInteger id);
 
-    APIResponse<UserResponse> getTweetUserByScreenName(String screenName);
+    UserResponse getTweetUserByScreenName(String screenName);
 
 }
